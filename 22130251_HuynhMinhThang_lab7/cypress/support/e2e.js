@@ -17,8 +17,7 @@
 import "./commands";
 import { slowCypressDown } from "cypress-slow-down";
 
-// Làm chậm mỗi lệnh 1000ms (1 giây)
-slowCypressDown(500);
+slowCypressDown(200);
 // Bỏ qua lỗi AxiosError: Request aborted từ phía ứng dụng
 Cypress.on("uncaught:exception", (err, runnable) => {
   // Nếu thông báo lỗi có chứa từ khóa này

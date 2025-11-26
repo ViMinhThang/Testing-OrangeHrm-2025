@@ -85,7 +85,6 @@ describe("OrangeHRM - Employee Management Test Suite", () => {
 
       cy.contains("Attachment Size Exceeded").should("be.visible");
     });
-
     it("AddEmployee_07_Success_CreateNew: Verify new employee appears in list after saving", () => {
       const uniqueId = Date.now().toString();
       const firstName = "Auto";
@@ -97,7 +96,13 @@ describe("OrangeHRM - Employee Management Test Suite", () => {
 
       cy.contains("Successfully Saved").should("be.visible");
 
-      cy.contains("a", "Employee List").click();
+      cy.url().should("include", "/viewPersonalDetails");
+      cy.contains("h6", "Personal Details").should("be.visible");
+
+      cy.contains("nav li", "Employee List").click();
+      // ------------------------
+
+      cy.get(".oxd-table-filter").should("be.visible");
 
       cy.get('input[placeholder="Type for hints..."]').first().type(firstName);
       cy.get('button[type="submit"]').click();
