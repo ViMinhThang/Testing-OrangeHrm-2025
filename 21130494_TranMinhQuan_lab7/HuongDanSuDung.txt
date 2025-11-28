@@ -1,5 +1,8 @@
 Bởi vì tính phức tạp của trang web khiến cho việc dùng Selenium IDE gặp cực nhiều khó khăn nên 
 em xin phép cô được viết code bằng Python
+Phần script nằm trong thư mục src
+
+Link google sheet chứa test case: https://docs.google.com/spreadsheets/d/1k8jzEYfhNT1-jEnd5EEYnAiihefAVyVbmXeLC71PLAU/edit?gid=1106634420#gid=1106634420
 
 Yêu cầu:
 + Python >= 3.10

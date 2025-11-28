@@ -6,177 +6,145 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 
+class BreakLoop(Exception): pass
+
 def wait_and_click(driver, by, locator, time=7):
     WebDriverWait(driver, time).until(
         EC.visibility_of_element_located((by, locator))
     )
-    driver.find_element(by, localtor).click()
+    driver.find_element(by, locator).click()
+    
+def wait_and_type(driver, by, locator, text, time=7):
+    WebDriverWait(driver, time).until(
+        EC.visibility_of_element_located((by, locator))
+    )
+    driver.find_element(by, locator).send_keys(text)
+def wait_and_get_all(driver, by, locator, time=7):
+    WebDriverWait(driver, time).until(
+        EC.visibility_of_element_located((by, locator))
+    )
+    return driver.find_elements(by,locator)
 
 def test_TC_Claim_OK(driver):
     # Chuyển qua trang Claim
     driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
-    # Đợi web hiện lên
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
-    )
-    
-    # Nhấn nút "Assign Claim"
-    button = driver.find_element(By.CSS_SELECTOR, "div.orangehrm-header-container button")
-    button.click()
-    # Đợi web hiện lên
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
-    )
-    # Nhập tên nhân viên
-    employee_name_input = driver.find_element(By.XPATH, "//input[@placeholder='Type for hints...']")
-    employee_name_input.send_keys("Ranga")
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.XPATH, "//*[text()='Ranga  Akunuri']"))
-    )
-    driver.find_element(By.XPATH, "//*[text()='Ranga  Akunuri']").click()
-    # Chọn Event
-    comboboxes = driver.find_elements(By.CLASS_NAME, "oxd-select-text.oxd-select-text--active")
+    # Nhấn nút "Assign Claim" và chuyển sang trang mới
+    wait_and_click(driver, By.CSS_SELECTOR, "div.orangehrm-header-container button")
+    # Nhập tên nhân viên, sau đó đợi hiện gợi ý employee rồi click
+    wait_and_type(driver, By.XPATH, "//input[@placeholder='Type for hints...']", "Ranga")
+    wait_and_click(driver, By.XPATH, "//*[text()='Ranga  Akunuri']")
+    #Chọn Event
+    comboboxes = driver.find_elements(By.CSS_SELECTOR, ".oxd-select-text.oxd-select-text--active")
     event_combobox = comboboxes[0]
     event_combobox.click()
-    driver.find_element(By.XPATH, "//*[text()='Accommodation']").click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Accommodation']")
     # Chọn Currency
     currency_combobox = comboboxes[1]
     currency_combobox.click()
-    driver.find_element(By.XPATH, "//*[text()='Afghanistan Afghani']").click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Afghanistan Afghani']")
     # Submit
-    submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
-    submit_button.click()
-    
-    try:
-        # Chờ tối đa 15 giây xem URL có chứa chuỗi mong muốn không
-        WebDriverWait(driver, 10).until(
-            EC.url_contains("/claim/assignClaim/id")
-        )
-        # Nếu chạy đến đây nghĩa là không bị Timeout -> Test Pass
-        print("Test Passed: Đã chuyển hướng thành công.")
-
-    except TimeoutException:
-        assert False
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    # Kiểm tra điều kiện
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/claim/assignClaim/id")
+    )
+    print("TC_Claim_OK: Passed")
 
 def test_TC_Claim_EmployeeName_Missing(driver):
     # Chuyển qua trang Claim
     driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
-    # Đợi web hiện lên
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
-    )
-    
-    # Nhấn nút "Assign Claim"
-    button = driver.find_element(By.CSS_SELECTOR, "div.orangehrm-header-container button")
-    button.click()
-    # Đợi web hiện lên
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
-    )
-    # Nhập tên nhân viên
-    employee_name_input = driver.find_element(By.XPATH, "//input[@placeholder='Type for hints...']")
-    employee_name_input.send_keys("qqqqqqqqqqqqqqq")
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.XPATH, "//*[text()='No Records Found']"))
-    )
-    # Chọn Event
-    comboboxes = driver.find_elements(By.CLASS_NAME, "oxd-select-text.oxd-select-text--active")
+    # Nhấn nút "Assign Claim" và chuyển sang trang mới
+    wait_and_click(driver, By.CSS_SELECTOR, "div.orangehrm-header-container button")
+    # Nhập tên nhân viên, sau đó đợi hiện gợi ý employee rồi click
+    wait_and_type(driver, By.XPATH, "//input[@placeholder='Type for hints...']", "qqqqqqqqqqqqqqq")
+    wait_and_click(driver, By.XPATH, "//*[text()='No Records Found']")
+    #Chọn Event
+    comboboxes = driver.find_elements(By.CSS_SELECTOR, ".oxd-select-text.oxd-select-text--active")
     event_combobox = comboboxes[0]
     event_combobox.click()
-    driver.find_element(By.XPATH, "//*[text()='Accommodation']").click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Accommodation']")
     # Chọn Currency
     currency_combobox = comboboxes[1]
     currency_combobox.click()
-    driver.find_element(By.XPATH, "//*[text()='Afghanistan Afghani']").click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Afghanistan Afghani']")
     # Submit
-    submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
-    submit_button.click()
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    # Kiểm tra điều kiện
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, '//span[text()="Invalid"]'))
+    )
+    print("TC_Claim_EmployeeName_Missing: Passed")
     
-    
-    try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//span[text()="Invalid"]'))
-        )
-        assert True
-
-    except TimeoutException:
-        assert False
-        
 def test_TC_Claim_Attributes_Missing(driver):
     # Chuyển qua trang Claim
     driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
-    # Đợi web hiện lên
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
-    )
-    
-    # Nhấn nút "Assign Claim"
-    button = driver.find_element(By.CSS_SELECTOR, "div.orangehrm-header-container button")
-    button.click()
-    # Đợi web hiện lên
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
-    )
-    # Nhập tên nhân viên
-    employee_name_input = driver.find_element(By.XPATH, "//input[@placeholder='Type for hints...']")
-    employee_name_input.send_keys("Ranga")
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.XPATH, "//*[text()='Ranga  Akunuri']"))
-    )
-    driver.find_element(By.XPATH, "//*[text()='Ranga  Akunuri']").click()
+    # Nhấn nút "Assign Claim" và chuyển sang trang mới
+    wait_and_click(driver, By.CSS_SELECTOR, "div.orangehrm-header-container button")
+    # Nhập tên nhân viên, sau đó đợi hiện gợi ý employee rồi click
+    wait_and_type(driver, By.XPATH, "//input[@placeholder='Type for hints...']", "Ranga")
+    wait_and_click(driver, By.XPATH, "//*[text()='Ranga  Akunuri']")
     # Submit
-    submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
-    submit_button.click()
-    
-    try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//span[text()="Required"]'))
-        )
-        assert True
-
-    except TimeoutException:
-        assert False
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    #Kiểm tra điều kiện
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, '//span[text()="Required"]'))
+    )
+    print("TC_Claim_Attributes_Missing: Passed")
         
 def test_TC_Claim_Myself_OK(driver):
     # Chuyển qua trang Claim
     driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
+    wait_and_click(driver, By.XPATH, "//*[text()='My Claims']")
+    wait_and_click(driver, By.XPATH, "//*[text()='Submit Claim']")
     # Đợi web hiện lên
     WebDriverWait(driver, 15).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
     )
-    # Chuyển qua My Claims
-    driver.find_element(By.XPATH, "//*[text()='My Claims']").click()
-    # Đợi
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.XPATH, "//*[text()='Submit Claim']"))
-    )
-    # Nhấn nút "Submit Claim"
-    button = driver.find_element(By.XPATH, "//*[text()='Submit Claim']")
-    button.click()
-    # Đợi web hiện lên
-    WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
-    )
-    # Chọn Event
-    comboboxes = driver.find_elements(By.CLASS_NAME, "oxd-select-text.oxd-select-text--active")
+    #Chọn Event
+    comboboxes = driver.find_elements(By.CSS_SELECTOR, ".oxd-select-text.oxd-select-text--active")
     event_combobox = comboboxes[0]
     event_combobox.click()
-    driver.find_element(By.XPATH, "//*[text()='Accommodation']").click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Accommodation']")
     # Chọn Currency
     currency_combobox = comboboxes[1]
     currency_combobox.click()
-    driver.find_element(By.XPATH, "//*[text()='Afghanistan Afghani']").click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Afghanistan Afghani']")
     # Submit
-    submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
-    submit_button.click()
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/claim/submitClaim/id")
+    )
+    print("TC_Claim_Myself_OK: Passed")
+    
+def test_TC_Claim_Myself_Attributes_Missing(driver):
+    # Chuyển qua trang Claim
+    driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
+    wait_and_click(driver, By.XPATH, "//*[text()='My Claims']")
+    wait_and_click(driver, By.XPATH, "//*[text()='Submit Claim']")
+    # Đợi web hiện lên
+    WebDriverWait(driver, 15).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
+    )
+    # Submit
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    #Kiểm tra điều kiện
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, '//span[text()="Required"]'))
+    )
+    print("TC_Claim_Myself_Attributes_Missing: Passed")
+
+def test_TC_Claim_AddExpense_OK(driver):
+    # Chuyển qua trang Claim
+    driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
+    rows = wait_and_get_all(By.CSS_SELECTOR, "div.oxd-table-row")
     
     try:
-        # Chờ tối đa 15 giây xem URL có chứa chuỗi mong muốn không
-        WebDriverWait(driver, 10).until(
-            EC.url_contains("/claim/assignClaim/id")
-        )
-        # Nếu chạy đến đây nghĩa là không bị Timeout -> Test Pass
-        print("Test Passed: Đã chuyển hướng thành công.")
-
-    except TimeoutException:
-        assert False
+        for row in rows:
+        cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
+        for cell in cells:
+            if cell.text.strip() == "Initiated":
+                row.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
+                raise BreakLoop
+    except BreakLoop:
+        pass
