@@ -148,3 +148,76 @@ def test_TC_Claim_AddExpense_OK(driver):
                 raise BreakLoop
     except BreakLoop:
         pass
+        
+def test_TC_Claim_AddExpense_Missing_Attributes(driver):
+    # Chuyển qua trang Claim
+    driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
+    # Nhấn nút "Assign Claim" và chuyển sang trang mới
+    wait_and_click(driver, By.CSS_SELECTOR, "div.orangehrm-header-container button")
+    # Nhập tên nhân viên, sau đó đợi hiện gợi ý employee rồi click
+    wait_and_type(driver, By.XPATH, "//input[@placeholder='Type for hints...']", "Ranga")
+    wait_and_click(driver, By.XPATH, "//*[text()='Ranga  Akunuri']")
+    #Chọn Event
+    comboboxes = driver.find_elements(By.CSS_SELECTOR, ".oxd-select-text.oxd-select-text--active")
+    event_combobox = comboboxes[0]
+    event_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Accommodation']")
+    # Chọn Currency
+    currency_combobox = comboboxes[1]
+    currency_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Afghanistan Afghani']")
+    # Submit
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    # Kiểm tra điều kiện
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/claim/assignClaim/id")
+    )
+    
+def test_TC_Claim_AddExpense_Money_Wrong_Input(driver):
+    # Chuyển qua trang Claim
+    driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
+    # Nhấn nút "Assign Claim" và chuyển sang trang mới
+    wait_and_click(driver, By.CSS_SELECTOR, "div.orangehrm-header-container button")
+    # Nhập tên nhân viên, sau đó đợi hiện gợi ý employee rồi click
+    wait_and_type(driver, By.XPATH, "//input[@placeholder='Type for hints...']", "Ranga")
+    wait_and_click(driver, By.XPATH, "//*[text()='Ranga  Akunuri']")
+    #Chọn Event
+    comboboxes = driver.find_elements(By.CSS_SELECTOR, ".oxd-select-text.oxd-select-text--active")
+    event_combobox = comboboxes[0]
+    event_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Accommodation']")
+    # Chọn Currency
+    currency_combobox = comboboxes[1]
+    currency_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Afghanistan Afghani']")
+    # Submit
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    # Kiểm tra điều kiện
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/claim/assignClaim/id")
+    )
+    
+def test_TC_Claim_DeleteExpense_OK(driver):
+    # Chuyển qua trang Claim
+    driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/claim/viewAssignClaim")
+    # Nhấn nút "Assign Claim" và chuyển sang trang mới
+    wait_and_click(driver, By.CSS_SELECTOR, "div.orangehrm-header-container button")
+    # Nhập tên nhân viên, sau đó đợi hiện gợi ý employee rồi click
+    wait_and_type(driver, By.XPATH, "//input[@placeholder='Type for hints...']", "Ranga")
+    wait_and_click(driver, By.XPATH, "//*[text()='Ranga  Akunuri']")
+    #Chọn Event
+    comboboxes = driver.find_elements(By.CSS_SELECTOR, ".oxd-select-text.oxd-select-text--active")
+    event_combobox = comboboxes[0]
+    event_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Accommodation']")
+    # Chọn Currency
+    currency_combobox = comboboxes[1]
+    currency_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Afghanistan Afghani']")
+    # Submit
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+    # Kiểm tra điều kiện
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/claim/assignClaim/id")
+    )
+    
