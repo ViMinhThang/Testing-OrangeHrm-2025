@@ -141,11 +141,11 @@ def test_TC_Claim_AddExpense_OK(driver):
     
     try:
         for row in rows:
-        cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
-        for cell in cells:
-            if cell.text.strip() == "Initiated":
-                row.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
-                raise BreakLoop
+            cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
+            for cell in cells:
+                if cell.text.strip() == "Initiated":
+                    row.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
+                    raise BreakLoop
     except BreakLoop:
         pass
         
