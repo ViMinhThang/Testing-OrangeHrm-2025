@@ -1,0 +1,8 @@
+# Môi trường ảo Python
+venv/
+
+# Bộ nhớ đệm của Pytest
+.pytest_cache/
+
+# Bộ nhớ đệm của Python (được tạo ra bởi interpreter)
+src/__pycache__/
