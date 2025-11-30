@@ -459,4 +459,50 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
           .should('have.prop', 'checked', !initialState);
     });
   });
+
+
+  // --- TEST CASE 10 ---
+  it.only("TC_FD_010 - Kiểm tra liên kết (Page Link) của Flash Deal hoạt động", () => {
+    
+    // 1. Vào trang danh sách
+    cy.visit("https://cms.anhtester.com/admin/flash_deals");
+    cy.contains("All Flash Deals", { timeout: 10000 }).should("be.visible");
+
+    // 2. Mở rộng dòng đầu tiên để lộ ra các cột bị ẩn (trong đó có Page Link)
+    cy.get('table.aiz-table tbody tr')
+      .first()
+      .find('.footable-toggle')
+      .should("be.visible")
+      .click();
+
+    // 3. Tìm dòng chứa text "Page Link" trong phần chi tiết
+    // Lưu ý: Cấu trúc Footable khi mở rộng sẽ tạo ra một row mới class="footable-detail-row"
+    cy.get('table.aiz-table tbody tr.footable-detail-row')
+      .first()
+      .within(() => {
+          // Tìm phần tử chứa Link (Thường nằm trong thẻ td hoặc th)
+          // Dựa vào HTML bảng, Page Link nằm ở cột thứ 8 (index 7) hoặc tìm theo text label
+          cy.contains("Page Link").next().then(($cell) => {
+              const url = $cell.text().trim();
+              
+              // Log ra để xem
+              cy.log("Flash Deal URL: " + url);
+
+              // 4. Verify cấu trúc URL
+              expect(url).to.include("https://cms.anhtester.com/flash-deal/"); // Phải chứa domain và path
+              expect(url).to.not.be.empty; // Không được rỗng
+          });
+      });
+      
+    // 5. (Nâng cao) Kiểm tra link có "sống" không bằng cách request thử
+    // Lấy URL từ cột ẩn (dựa vào HTML bạn cung cấp: td thứ 8)
+    cy.get('table.aiz-table tbody tr').first().find('td').eq(7).invoke('text').then((url) => {
+        const cleanUrl = url.trim();
+        if(cleanUrl.startsWith('http')) {
+            cy.request(cleanUrl).then((response) => {
+                expect(response.status).to.eq(200); // Trang web phải truy cập được
+            });
+        }
+    });
+  });
 });
