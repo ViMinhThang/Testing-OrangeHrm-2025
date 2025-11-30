@@ -223,7 +223,7 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
   });
 
   // --- TEST CASE 4 ---
-  it("TC_FD_004 - Tạo Flash Deal với ngày kết thúc sớm hơn ngày bắt đầu", () => {
+  it("FLASH_DEALS_04 - Tạo Flash Deal với ngày kết thúc sớm hơn ngày bắt đầu", () => {
 
     cy.contains("Create New Flash Deal").click({ force: true });
     cy.contains("Flash Deal Information", { timeout: 10000 }).should("be.visible");
@@ -294,7 +294,7 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
 
 
     // --- TEST CASE 5 ---
-  it("TC_FD_005 - Tìm kiếm Flash Deal theo tên", () => {
+  it("FLASH_DEALS_05 - Tìm kiếm Flash Deal theo tên", () => {
     
     // 1. Vào trang danh sách (Dùng link tuyệt đối để tránh lỗi 404)
     cy.visit("https://cms.anhtester.com/admin/flash_deals");
@@ -328,7 +328,7 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
 
   // --- TEST CASE 6 ---
   // --- TEST CASE 6 (ĐÃ FIX VERIFY) ---
-  it("TC_FD_006 - Chỉnh sửa thông tin Flash Deal đã tồn tại", () => {
+  it("FLASH_DEALS_06 - Chỉnh sửa thông tin Flash Deal đã tồn tại", () => {
     
     // 1. Vào trang danh sách
     cy.visit("https://cms.anhtester.com/admin/flash_deals");
@@ -366,7 +366,7 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
 
 
 // --- TEST CASE 7 ---
-  it("TC_FD_007 - Xóa một Flash Deal khỏi danh sách", () => {
+  it("FLASH_DEALS_07 - Xóa một Flash Deal khỏi danh sách", () => {
     
     cy.visit("https://cms.anhtester.com/admin/flash_deals");
     cy.contains("All Flash Deals", { timeout: 10000 }).should("be.visible");
@@ -392,7 +392,7 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
   });
 
   // --- TEST CASE 8 ---
-  it("TC_FD_008 - Bật/tắt trạng thái hiển thị của Flash Deal", () => {
+  it("FLASH_DEALS_08 - Bật/tắt trạng thái hiển thị của Flash Deal", () => {
 
     cy.visit("https://cms.anhtester.com/admin/flash_deals");
     cy.contains("All Flash Deals", { timeout: 10000 }).should("be.visible");
@@ -428,7 +428,7 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
 
   // --- TEST CASE 9 ---
 
-  it("TC_FD_009 - Đánh dấu/bỏ đánh dấu Flash Deal là Featured", () => {
+  it("FLASH_DEALS_09 - Đánh dấu/bỏ đánh dấu Flash Deal là Featured", () => {
     
     cy.visit("https://cms.anhtester.com/admin/flash_deals");
     cy.contains("All Flash Deals", { timeout: 10000 }).should("be.visible");
@@ -462,7 +462,7 @@ describe("FLASH DEALS MODULE AUTOMATION TEST", () => {
 
 
   // --- TEST CASE 10 ---
-  it.only("TC_FD_010 - Kiểm tra liên kết (Page Link) của Flash Deal hoạt động", () => {
+  it("FLASH_DEALS_10 - Kiểm tra liên kết (Page Link) của Flash Deal hoạt động", () => {
     
     // 1. Vào trang danh sách
     cy.visit("https://cms.anhtester.com/admin/flash_deals");

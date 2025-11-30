@@ -26,7 +26,6 @@ describe("COUPON MODULE AUTOMATION TEST", () => {
     cy.url().should("include", "/admin/coupon");
   });
 
-  describe("COUPON_01 - Tạo coupon For Products với Discount Amount thành công", () => {
 
     it("COUPON_01 - Tạo coupon For Products với Discount Amount thành công", () => {
 
@@ -130,10 +129,9 @@ describe("COUPON MODULE AUTOMATION TEST", () => {
       cy.url().should("include", "/admin/coupon", { timeout: 10000 });
       cy.contains("PROD_AMT10", { timeout: 5000 }).should("be.visible");
     });
-  });
+  
 
-  describe("COUPON_02 - Tạo coupon For Products với Discount Percent thành công", () => {
-
+ 
     it("COUPON_02 - Tạo coupon For Products với Discount Percent thành công", () => {
 
       // Step 1-2: Login, Add New Coupon
@@ -229,9 +227,8 @@ describe("COUPON MODULE AUTOMATION TEST", () => {
       cy.url().should("include", "/admin/coupon", { timeout: 10000 });
       cy.contains("PROD_PER10", { timeout: 5000 }).should("be.visible");
     });
-  });
+  
 
-  describe("COUPON_03 - Không nhập Coupon Code khi tạo coupon For Products", () => {
 
   it("COUPON_03 - Không nhập Coupon Code khi tạo coupon For Products", () => {
 
@@ -284,10 +281,9 @@ describe("COUPON MODULE AUTOMATION TEST", () => {
     cy.url().should("include", "/coupon/create");
     cy.contains("Coupon Information Adding").should("be.visible");
   });
-});
 
 
-describe("COUPON_04 - Không chọn Product khi tạo coupon For Products", () => {
+
 
   it("COUPON_04 - Không chọn Product khi tạo coupon For Products", () => {
 
@@ -356,11 +352,9 @@ describe("COUPON_04 - Không chọn Product khi tạo coupon For Products", () =
     cy.url().should("include", "/coupon/create");
     cy.contains("Coupon Information Adding").should("be.visible");
   });
-});
 
 
 
-describe("COUPON_05 - Nhập Discount dạng Amount nhưng để trống Discount Value", () => {
 
   it("COUPON_05 - Nhập Discount dạng Amount nhưng để trống Discount Value", () => {
 
@@ -463,10 +457,8 @@ describe("COUPON_05 - Nhập Discount dạng Amount nhưng để trống Discoun
     cy.url().should("include", "/coupon/create");
     cy.contains("Coupon Information Adding").should("be.visible");
   });
-});
 
 
-describe("COUPON_06 - Nhập Discount dạng Percent nhưng giá trị > 100", () => {
 
   it("COUPON_06 - Nhập Discount dạng Percent nhưng giá trị > 100", () => {
 
@@ -579,9 +571,8 @@ describe("COUPON_06 - Nhập Discount dạng Percent nhưng giá trị > 100", (
     cy.url().should("include", "/coupon/create");
     cy.contains("Coupon Information Adding").should("be.visible");
   });
-});
 
-describe("COUPON_07 - Tạo coupon For Total Orders với dữ liệu hợp lệ", () => {
+
 
   it("COUPON_07 - Tạo coupon For Total Orders với dữ liệu hợp lệ", () => {
 
@@ -658,10 +649,9 @@ describe("COUPON_07 - Tạo coupon For Total Orders với dữ liệu hợp lệ
     cy.url().should("include", "/admin/coupon", { timeout: 10000 });
     cy.contains("ORDER10", { timeout: 5000 }).should("be.visible");
   });
-});
 
 
-describe("COUPON_08 - Không nhập Minimum Shopping trong coupon For Total Orders", () => {
+
 
   it("COUPON_08 - Không nhập Minimum Shopping trong coupon For Total Orders", () => {
 
@@ -744,11 +734,10 @@ describe("COUPON_08 - Không nhập Minimum Shopping trong coupon For Total Orde
     cy.url().should("include", "/coupon/create");
     cy.contains("Coupon Information Adding").should("be.visible");
   });
-});
 
 
 
-describe("COUPON_09 - Chỉnh sửa coupon và thay đổi loại Discount", () => {
+
 
   it("COUPON_09 - Chỉnh sửa coupon và thay đổi loại Discount", () => {
 
@@ -807,10 +796,8 @@ describe("COUPON_09 - Chỉnh sửa coupon và thay đổi loại Discount", () 
     cy.url().should("include", "/admin/coupon", { timeout: 10000 });
     cy.contains("All Coupons").should("be.visible");
   });
-});
 
 
-describe("COUPON_10 - Xóa coupon bất kỳ", () => {
 
   it("COUPON_10 - Xóa coupon bất kỳ", () => {
 
@@ -860,7 +847,7 @@ describe("COUPON_10 - Xóa coupon bất kỳ", () => {
     cy.url().should("include", "/admin/coupon");
     cy.contains("All Coupons").should("be.visible");
   });
-});
+
 
 
 });
