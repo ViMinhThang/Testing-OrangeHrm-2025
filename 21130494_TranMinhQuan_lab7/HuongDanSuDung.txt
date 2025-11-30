@@ -18,6 +18,6 @@ Khi kích hoạt thành công sẽ có (venv) xuất hiện tại đầu dòng l
 * Bước 3 - cài đặt thư viện cần thiết (gồm Selenium, Pytest và các thư viện liên quan)
 	- pip install -r requirements.txt
 * Bước 4 -  Chạy chương trình automation test
-	- pytest -v .\src\
+	- pytest -v .\src\21130494_TranMinhQuan_Lab7.py
 * Bước 5 - thoát môi trường ảo:
 	- deactivate
