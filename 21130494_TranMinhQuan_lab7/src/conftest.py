@@ -5,6 +5,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+DOMAIN = r"http://localhost/orangehrm-5.8/orangehrm-5.8"
+USERNAME = "admin"
+PASSWORD = "Admin123123mmnn@"
+
+def gotoURL(driver, path):
+    driver.get(DOMAIN + path)
+
 # Khởi tạo 1 browser duy nhất cho toàn bộ test session
 @pytest.fixture(scope="session")
 def driver():
@@ -17,7 +24,7 @@ def driver():
 @pytest.fixture(autouse=True)
 def beforeEach(driver):
     # Logout trước
-    driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/logout")
+    gotoURL(driver, r"/web/index.php/auth/logout")
     
     WebDriverWait(driver, 15).until(
         EC.url_contains("/auth/login")
@@ -28,8 +35,8 @@ def beforeEach(driver):
     )
     
     # Nhập thông tin tài khoản/mật khẩu admin và đăng nhập
-    driver.find_element(By.NAME, "username").send_keys("Admin")
-    driver.find_element(By.NAME, "password").send_keys("admin123")
+    driver.find_element(By.NAME, "username").send_keys(USERNAME)
+    driver.find_element(By.NAME, "password").send_keys(PASSWORD)
     driver.find_element(By.CSS_SELECTOR, "button.orangehrm-login-button").click()
     
     # Đợi đến khi có phản hồi
