@@ -14,14 +14,6 @@ DOMAIN = r"http://localhost/orangehrm-5.8/orangehrm-5.8"
 
 def gotoURL(driver, path):
     driver.get(DOMAIN + path)
-    
-def claimCount(driver):
-    rows = wait_and_get_all(driver, By.CSS_SELECTOR, "div.oxd-table-row")
-    return len(rows)
-    
-def expenseCount(driver):
-    rows = wait_and_get_all(driver, By.CSS_SELECTOR, ".oxd-table-card")
-    return len(rows)
 
 def wait_and_click(driver, by, locator, time=7):
     WebDriverWait(driver, time).until(
@@ -34,11 +26,52 @@ def wait_and_type(driver, by, locator, text, time=7):
         EC.visibility_of_element_located((by, locator))
     )
     driver.find_element(by, locator).send_keys(text)
+
 def wait_and_get_all(driver, by, locator, time=7):
-    WebDriverWait(driver, time).until(
-        EC.visibility_of_element_located((by, locator))
+    try:
+        WebDriverWait(driver, time).until(
+            EC.visibility_of_element_located((by, locator))
+        )
+        return driver.find_elements(by, locator)
+    except TimeoutException:
+        return []  # trả về mảng rỗng nếu hết thời gian chờ
+    
+def claimCount(driver):
+    rows = wait_and_get_all(driver, By.CSS_SELECTOR, "div.oxd-table-row")
+    return len(rows)
+    
+def expenseCount(driver):
+    rows = wait_and_get_all(driver, By.CSS_SELECTOR, ".oxd-table-card")
+    return len(rows)
+    
+def createNewClaimMySelf(driver):
+    gotoURL(driver, r"/web/index.php/claim/submitClaim")
+    WebDriverWait(driver, 7).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
     )
-    return driver.find_elements(by,locator)
+    #Chọn Event
+    comboboxes = driver.find_elements(By.CSS_SELECTOR, ".oxd-select-text.oxd-select-text--active")
+    event_combobox = comboboxes[0]
+    event_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Accommodation']")
+    # Chọn Currency
+    currency_combobox = comboboxes[1]
+    currency_combobox.click()
+    wait_and_click(driver, By.XPATH, "//*[text()='Afghanistan Afghani']")
+    # Submit
+    wait_and_click(driver, By.XPATH, "//button[@type='submit']")
+
+def getClaimInitiated(driver):
+    rows = wait_and_get_all(driver, By.CSS_SELECTOR, "div.oxd-table-card")
+    if len(rows) == 0:
+        return None
+    
+    for row in rows:
+        cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
+        for cell in cells:
+            if cell.text.strip() == "Initiated":
+                return row
+    return None
 
 def test_TC_Claim_OK(driver):
     # Chuyển qua trang Claim
@@ -167,22 +200,49 @@ def test_TC_Claim_Myself_Attributes_Missing(driver):
     gotoURL(driver, r"/web/index.php/claim/viewClaim")
     currentClaimCount = claimCount(driver)
     assert currentClaimCount == previousAddClaimCount
+
+def test_TC_Claim_Status_Init2Submitted_OK(driver):
+    # Chuyển qua trang Claim
+    gotoURL(driver, r"/web/index.php/claim/viewClaim")
+    claim_initiated = getClaimInitiated(driver)
+    if claim_initiated is None:
+        createNewClaimMySelf(driver)
+        gotoURL(driver, r"/web/index.php/claim/viewClaim")
+        claim_initiated = getClaimInitiated(driver)
+    claim_initiated.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
+    
+    wait_and_click(driver, By.XPATH, ".//button[contains(., 'Submit')]")
+    driver.refresh()
+    WebDriverWait(driver, 7).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
+    )
+    
+def test_TC_Claim_Status_Init2Cancelled_OK(driver):
+    # Chuyển qua trang Claim
+    gotoURL(driver, r"/web/index.php/claim/viewClaim")
+    claim_initiated = getClaimInitiated(driver)
+    if claim_initiated is None:
+        createNewClaimMySelf(driver)
+        gotoURL(driver, r"/web/index.php/claim/viewClaim")
+        claim_initiated = getClaimInitiated(driver)
+    claim_initiated.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
+    
+    wait_and_click(driver, By.XPATH, ".//button[contains(., 'Cancel')]")
+    driver.refresh()
+    WebDriverWait(driver, 7).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "h6.oxd-topbar-header-breadcrumb-module"))
+    )
     
 
 def test_TC_Claim_AddExpense_OK(driver):
     # Chuyển qua trang Claim
     gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
-    rows = wait_and_get_all(driver, By.CSS_SELECTOR, "div.oxd-table-row")
-    
-    try:
-        for row in rows:
-            cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
-            for cell in cells:
-                if cell.text.strip() == "Initiated":
-                    row.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
-                    raise BreakLoop
-    except BreakLoop:
-        pass
+    claim_initiated = getClaimInitiated(driver)
+    if claim_initiated is None:
+        createNewClaimMySelf(driver)
+        gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
+        claim_initiated = getClaimInitiated(driver)
+    claim_initiated.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
     
     previousExpenseCount = expenseCount(driver)
     expense_button = wait_and_get_all(driver, By.CSS_SELECTOR, "button.oxd-button")[0]
@@ -206,17 +266,12 @@ def test_TC_Claim_AddExpense_OK(driver):
 def test_TC_Claim_AddExpense_Missing_Attributes(driver):
     # Chuyển qua trang Claim
     gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
-    rows = wait_and_get_all(driver, By.CSS_SELECTOR, "div.oxd-table-row")
-    
-    try:
-        for row in rows:
-            cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
-            for cell in cells:
-                if cell.text.strip() == "Initiated":
-                    row.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
-                    raise BreakLoop
-    except BreakLoop:
-        pass
+    claim_initiated = getClaimInitiated(driver)
+    if claim_initiated is None:
+        createNewClaimMySelf(driver)
+        gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
+        claim_initiated = getClaimInitiated(driver)
+    claim_initiated.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
     
     previousExpenseCount = expenseCount(driver)
     expense_button = wait_and_get_all(driver, By.CSS_SELECTOR, "button.oxd-button")[0]
@@ -234,17 +289,12 @@ def test_TC_Claim_AddExpense_Missing_Attributes(driver):
 def test_TC_Claim_AddExpense_Money_Wrong_Input(driver):
     # Chuyển qua trang Claim
     gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
-    rows = wait_and_get_all(driver, By.CSS_SELECTOR, "div.oxd-table-row")
-    
-    try:
-        for row in rows:
-            cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
-            for cell in cells:
-                if cell.text.strip() == "Initiated":
-                    row.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
-                    raise BreakLoop
-    except BreakLoop:
-        pass
+    claim_initiated = getClaimInitiated(driver)
+    if claim_initiated is None:
+        createNewClaimMySelf(driver)
+        gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
+        claim_initiated = getClaimInitiated(driver)
+    claim_initiated.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
     
     previousExpenseCount = expenseCount(driver)
     expense_button = wait_and_get_all(driver, By.CSS_SELECTOR, "button.oxd-button")[0]
@@ -282,17 +332,12 @@ def test_TC_Claim_AddExpense_Money_Wrong_Input(driver):
 def test_TC_Claim_AddExpense_Date_Wrong_Input(driver):
     # Chuyển qua trang Claim
     gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
-    rows = wait_and_get_all(driver, By.CSS_SELECTOR, "div.oxd-table-row")
-    
-    try:
-        for row in rows:
-            cells = row.find_elements(By.CSS_SELECTOR, ".oxd-table-cell")
-            for cell in cells:
-                if cell.text.strip() == "Initiated":
-                    row.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
-                    raise BreakLoop
-    except BreakLoop:
-        pass
+    claim_initiated = getClaimInitiated(driver)
+    if claim_initiated is None:
+        createNewClaimMySelf(driver)
+        gotoURL(driver, r"/web/index.php/claim/viewAssignClaim")
+        claim_initiated = getClaimInitiated(driver)
+    claim_initiated.find_element(By.XPATH, ".//button[contains(., 'View Details')]").click()
     
     previousExpenseCount = expenseCount(driver)
     expense_button = wait_and_get_all(driver, By.CSS_SELECTOR, "button.oxd-button")[0]
